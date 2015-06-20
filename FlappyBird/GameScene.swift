@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Moin Uddin. All rights reserved.
 //
 
+import UIKit
 import SpriteKit
 
 class Pipe: SKSpriteNode{
@@ -14,6 +15,8 @@ class Pipe: SKSpriteNode{
 }
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
+    
+    var viewController: GameViewController!
     
     var mainPipe: Pipe!
     var pipes: [Pipe] = [Pipe]()
@@ -67,22 +70,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var levelTitle: String = "Level 1"
     var levelSubTitle: String = "Survive 5 minutes"
     
-    func skRandf() -> CGFloat{
-        return CGFloat(rand()) / CGFloat(RAND_MAX)
-    }
-    
-    func skRand(low: CGFloat, high: CGFloat) -> CGFloat{
-        return skRandf() * (high - low) + low
-    }
-    
-    func skRandBool()->Bool{
-        let number: Float = Float(arc4random() % 61) + 40
-        if number % 2 == 0{
-            return true
-        }
-        return false
-    }
-    
     override func didMoveToView(view: SKView) {
         
         /*for fontName in UIFont.familyNames(){
@@ -101,6 +88,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addGround()
         addBackground()
         birdSetup()
+        
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1000 * Int64(NSEC_PER_MSEC)), dispatch_get_main_queue()){
+            self.viewController.loadLevelTwo()
+        }
     }
     
     func addBackground(){
@@ -180,7 +171,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func spawnPipeRow(){
-        let offset: CGFloat = self.skRand(45, high: 70)
+        let offset: CGFloat = DVRandGen.skRand(45, high: 70)
         
         let pipeBot: Pipe = mainPipe.copy() as! Pipe
         let pipeTop: Pipe = mainPipe.copy() as! Pipe
@@ -193,7 +184,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         pipeBot.texture?.filteringMode = SKTextureFilteringMode.Nearest
         pipeTop.texture?.filteringMode = SKTextureFilteringMode.Nearest
         
-        let randHeight: CGFloat = self.skRand(70, high: (view!.bounds.size.height - space))
+        let randHeight: CGFloat = DVRandGen.skRand(70, high: (view!.bounds.size.height - space))
         //println("randHeight: \(randHeight)")
         
         let xx: CGFloat = view!.bounds.size.width + offset
@@ -222,7 +213,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.addChild(pipeBot)
             self.addChild(pipeTop)
         }else{
-            if skRandBool(){
+            if DVRandGen.skRandBool(){
                 pipeBot.size.height = randHeight
                 pipeBot.physicsBody = SKPhysicsBody(rectangleOfSize: pipeBot.size, center: CGPointMake(pipeBot.size.width/2, pipeBot.size.height/2))
                 pipeBot.physicsBody!.dynamic = false

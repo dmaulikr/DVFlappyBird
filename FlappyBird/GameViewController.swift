@@ -22,7 +22,10 @@ class GameViewController: UIViewController {
     }
     
     override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
         let scene: GameScene = GameScene()
+        scene.viewController = self
         scene.backgroundColor = SKColor.whiteColor()
         //hello.size = CGSizeMake(768, 1024)
         scene.size = self.view.bounds.size
@@ -51,5 +54,11 @@ class GameViewController: UIViewController {
     
     override func supportedInterfaceOrientations() -> Int {
         return UIInterfaceOrientation.LandscapeLeft.rawValue
+    }
+    
+    // MARK: - move LevelTwo
+    func loadLevelTwo(){
+        let vc: LevelTwoViewController = self.storyboard?.instantiateViewControllerWithIdentifier("LevelTwoViewController") as! LevelTwoViewController
+        self.navigationController?.pushViewController(vc, animated: true)
     }
 }

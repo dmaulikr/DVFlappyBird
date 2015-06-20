@@ -14,9 +14,9 @@ extension SKNode {
         if let path = NSBundle.mainBundle().pathForResource(file, ofType: "sks") {
             var sceneData = NSData(contentsOfFile: path, options: .DataReadingMappedIfSafe, error: nil)!
             var archiver = NSKeyedUnarchiver(forReadingWithData: sceneData)
-            
-            archiver.setClass(self.classForKeyedUnarchiver(), forClassName: "SKScene")
-            let scene = archiver.decodeObjectForKey(NSKeyedArchiveRootObjectKey) as! GameScene
+            println(LevelTwo.self)
+            archiver.setClass(LevelTwo.self, forClassName: "SKScene")
+            let scene = archiver.decodeObjectForKey(NSKeyedArchiveRootObjectKey) as! LevelTwo
             archiver.finishDecoding()
             return scene
         } else {
@@ -30,21 +30,29 @@ class LevelTwoViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if let scene = GameScene.unarchiveFromFile("LevelTwo") as? GameScene {
-            // Configure the view.
-            let skView = self.view as! SKView
-            skView.showsFPS = true
-            skView.showsNodeCount = true
-            skView.showsDrawCount = true
-            skView.showsPhysics = true
+        let spriteView: SKView = self.view as! SKView
+        spriteView.showsDrawCount = true
+        spriteView.showsFPS = true
+        spriteView.showsNodeCount = true
+        //spriteView.showsPhysics = true
+
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        if let scene: LevelTwo = GameScene.unarchiveFromFile("LevelTwo") as? LevelTwo {
             
-            /* Sprite Kit applies additional optimizations to improve rendering performance */
-            skView.ignoresSiblingOrder = true
+            //scene.backgroundColor = SKColor.whiteColor()
+            //hello.size = CGSizeMake(768, 1024)
+            scene.size = self.view.bounds.size
+            println(scene.size)
             
             /* Set the scale mode to scale to fit the window */
             //scene.scaleMode = .AspectFit
             
-            skView.presentScene(scene)
+            let spriteView: SKView = self.view as! SKView
+            spriteView.presentScene(scene)
         }
     }
     
@@ -58,14 +66,14 @@ class LevelTwoViewController: UIViewController {
     }
     
     override func shouldAutorotate() -> Bool {
-        return false
+        return true
     }
     
     override func preferredInterfaceOrientationForPresentation() -> UIInterfaceOrientation {
-        return  UIInterfaceOrientation.LandscapeLeft
+        return  UIInterfaceOrientation.Portrait
     }
     
     override func supportedInterfaceOrientations() -> Int {
-        return UIInterfaceOrientation.LandscapeLeft.rawValue
+        return Int(UIInterfaceOrientationMask.AllButUpsideDown.rawValue)
     }
 }

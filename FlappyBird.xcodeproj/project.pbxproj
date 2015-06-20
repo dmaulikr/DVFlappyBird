@@ -17,6 +17,11 @@
 		CD65035C1B32C88B00570460 /* LevelTwo.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD65035B1B32C88B00570460 /* LevelTwo.swift */; };
 		CD65035E1B32C8B800570460 /* LevelTwo.sks in Resources */ = {isa = PBXBuildFile; fileRef = CD65035D1B32C8B800570460 /* LevelTwo.sks */; };
 		CD6503921B32C9CD00570460 /* LevelTwoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD6503911B32C9CD00570460 /* LevelTwoViewController.swift */; };
+		CD6503A01B32CF7000570460 /* ground_piece.png in Resources */ = {isa = PBXBuildFile; fileRef = CD65039D1B32CF7000570460 /* ground_piece.png */; };
+		CD6503A11B32CF7000570460 /* hills.png in Resources */ = {isa = PBXBuildFile; fileRef = CD65039E1B32CF7000570460 /* hills.png */; };
+		CD6503A21B32CF7000570460 /* sky.png in Resources */ = {isa = PBXBuildFile; fileRef = CD65039F1B32CF7000570460 /* sky.png */; };
+		CD6503A41B32CFC300570460 /* NavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD6503A31B32CFC300570460 /* NavigationViewController.swift */; };
+		CD9AA6BA1B35326B00EDFFB8 /* DVRandGen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9AA6B91B35326B00EDFFB8 /* DVRandGen.swift */; };
 		CDF5783F1B315CD200ACC27B /* bird.atlas in Resources */ = {isa = PBXBuildFile; fileRef = CDF5783E1B315CD200ACC27B /* bird.atlas */; };
 /* End PBXBuildFile section */
 
@@ -45,6 +50,11 @@
 		CD65035B1B32C88B00570460 /* LevelTwo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelTwo.swift; sourceTree = "<group>"; };
 		CD65035D1B32C8B800570460 /* LevelTwo.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = LevelTwo.sks; sourceTree = "<group>"; };
 		CD6503911B32C9CD00570460 /* LevelTwoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelTwoViewController.swift; sourceTree = "<group>"; };
+		CD65039D1B32CF7000570460 /* ground_piece.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ground_piece.png; sourceTree = "<group>"; };
+		CD65039E1B32CF7000570460 /* hills.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hills.png; sourceTree = "<group>"; };
+		CD65039F1B32CF7000570460 /* sky.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sky.png; sourceTree = "<group>"; };
+		CD6503A31B32CFC300570460 /* NavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationViewController.swift; sourceTree = "<group>"; };
+		CD9AA6B91B35326B00EDFFB8 /* DVRandGen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DVRandGen.swift; sourceTree = "<group>"; };
 		CDF5783E1B315CD200ACC27B /* bird.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = bird.atlas; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -87,13 +97,16 @@
 		CD617C591B26E43D00D5A45E /* FlappyBird */ = {
 			isa = PBXGroup;
 			children = (
+				CD65039B1B32CF7000570460 /* Art */,
 				CDF5783E1B315CD200ACC27B /* bird.atlas */,
 				CD617C5C1B26E43D00D5A45E /* AppDelegate.swift */,
+				CD9AA6B91B35326B00EDFFB8 /* DVRandGen.swift */,
+				CD6503A31B32CFC300570460 /* NavigationViewController.swift */,
 				CD617C601B26E43D00D5A45E /* GameScene.swift */,
+				CD617C621B26E43D00D5A45E /* GameViewController.swift */,
 				CD65035D1B32C8B800570460 /* LevelTwo.sks */,
 				CD65035B1B32C88B00570460 /* LevelTwo.swift */,
 				CD6503911B32C9CD00570460 /* LevelTwoViewController.swift */,
-				CD617C621B26E43D00D5A45E /* GameViewController.swift */,
 				CD617C641B26E43D00D5A45E /* Main.storyboard */,
 				CD617C671B26E43D00D5A45E /* Images.xcassets */,
 				CD617C691B26E43D00D5A45E /* LaunchScreen.xib */,
@@ -125,6 +138,24 @@
 				CD617C751B26E43D00D5A45E /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		CD65039B1B32CF7000570460 /* Art */ = {
+			isa = PBXGroup;
+			children = (
+				CD65039C1B32CF7000570460 /* level2 */,
+			);
+			path = Art;
+			sourceTree = "<group>";
+		};
+		CD65039C1B32CF7000570460 /* level2 */ = {
+			isa = PBXGroup;
+			children = (
+				CD65039D1B32CF7000570460 /* ground_piece.png */,
+				CD65039E1B32CF7000570460 /* hills.png */,
+				CD65039F1B32CF7000570460 /* sky.png */,
+			);
+			path = level2;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -208,10 +239,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD65035E1B32C8B800570460 /* LevelTwo.sks in Resources */,
+				CD6503A21B32CF7000570460 /* sky.png in Resources */,
 				CD617C6B1B26E43D00D5A45E /* LaunchScreen.xib in Resources */,
+				CD6503A11B32CF7000570460 /* hills.png in Resources */,
 				CD617C681B26E43D00D5A45E /* Images.xcassets in Resources */,
 				CDF5783F1B315CD200ACC27B /* bird.atlas in Resources */,
 				CD617C661B26E43D00D5A45E /* Main.storyboard in Resources */,
+				CD6503A01B32CF7000570460 /* ground_piece.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -229,6 +263,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD6503A41B32CFC300570460 /* NavigationViewController.swift in Sources */,
+				CD9AA6BA1B35326B00EDFFB8 /* DVRandGen.swift in Sources */,
 				CD617C611B26E43D00D5A45E /* GameScene.swift in Sources */,
 				CD6503921B32C9CD00570460 /* LevelTwoViewController.swift in Sources */,
 				CD617C631B26E43D00D5A45E /* GameViewController.swift in Sources */,
