@@ -8,6 +8,8 @@
 
 import UIKit
 
+var levelCount: Int = 1
+
 class NavigationViewController: UINavigationController {
 
     override func viewDidLoad() {

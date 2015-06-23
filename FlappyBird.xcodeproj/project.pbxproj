@@ -22,6 +22,7 @@
 		CD6503A21B32CF7000570460 /* sky.png in Resources */ = {isa = PBXBuildFile; fileRef = CD65039F1B32CF7000570460 /* sky.png */; };
 		CD6503A41B32CFC300570460 /* NavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD6503A31B32CFC300570460 /* NavigationViewController.swift */; };
 		CD9AA6BA1B35326B00EDFFB8 /* DVRandGen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9AA6B91B35326B00EDFFB8 /* DVRandGen.swift */; };
+		CD9AA6BC1B355BCA00EDFFB8 /* bird2.atlas in Resources */ = {isa = PBXBuildFile; fileRef = CD9AA6BB1B355BCA00EDFFB8 /* bird2.atlas */; };
 		CDF5783F1B315CD200ACC27B /* bird.atlas in Resources */ = {isa = PBXBuildFile; fileRef = CDF5783E1B315CD200ACC27B /* bird.atlas */; };
 /* End PBXBuildFile section */
 
@@ -55,6 +56,7 @@
 		CD65039F1B32CF7000570460 /* sky.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sky.png; sourceTree = "<group>"; };
 		CD6503A31B32CFC300570460 /* NavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NavigationViewController.swift; sourceTree = "<group>"; };
 		CD9AA6B91B35326B00EDFFB8 /* DVRandGen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DVRandGen.swift; sourceTree = "<group>"; };
+		CD9AA6BB1B355BCA00EDFFB8 /* bird2.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = bird2.atlas; sourceTree = "<group>"; };
 		CDF5783E1B315CD200ACC27B /* bird.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = bird.atlas; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -99,6 +101,7 @@
 			children = (
 				CD65039B1B32CF7000570460 /* Art */,
 				CDF5783E1B315CD200ACC27B /* bird.atlas */,
+				CD9AA6BB1B355BCA00EDFFB8 /* bird2.atlas */,
 				CD617C5C1B26E43D00D5A45E /* AppDelegate.swift */,
 				CD9AA6B91B35326B00EDFFB8 /* DVRandGen.swift */,
 				CD6503A31B32CFC300570460 /* NavigationViewController.swift */,
@@ -242,6 +245,7 @@
 				CD6503A21B32CF7000570460 /* sky.png in Resources */,
 				CD617C6B1B26E43D00D5A45E /* LaunchScreen.xib in Resources */,
 				CD6503A11B32CF7000570460 /* hills.png in Resources */,
+				CD9AA6BC1B355BCA00EDFFB8 /* bird2.atlas in Resources */,
 				CD617C681B26E43D00D5A45E /* Images.xcassets in Resources */,
 				CDF5783F1B315CD200ACC27B /* bird.atlas in Resources */,
 				CD617C661B26E43D00D5A45E /* Main.storyboard in Resources */,

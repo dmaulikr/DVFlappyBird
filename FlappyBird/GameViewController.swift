@@ -10,6 +10,13 @@ import UIKit
 import SpriteKit
 
 class GameViewController: UIViewController {
+    
+    var scene: GameScene!
+    
+    var parScore: Int = 5
+    var parTime: Int = 10
+    
+    var levelTitle: String = "Level \(levelCount)"
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,7 +31,10 @@ class GameViewController: UIViewController {
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
-        let scene: GameScene = GameScene()
+        scene = GameScene()
+        scene.parScore = self.parScore
+        scene.parTime = self.parTime
+        scene.levelTitle = self.levelTitle
         scene.viewController = self
         scene.backgroundColor = SKColor.whiteColor()
         //hello.size = CGSizeMake(768, 1024)
@@ -33,6 +43,20 @@ class GameViewController: UIViewController {
         
         let spriteView: SKView = self.view as! SKView
         spriteView.presentScene(scene)
+    }
+    
+    override func viewDidDisappear(animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        self.scene.removeAllActions()
+        self.scene.removeAllChildren()
+        
+        let spriteView: SKView = self.view as! SKView
+        spriteView.paused = true
+        spriteView.presentScene(nil)
+        spriteView.removeFromSuperview()
+        
+        self.scene = nil
     }
 
     override func didReceiveMemoryWarning() {
@@ -45,20 +69,28 @@ class GameViewController: UIViewController {
     }
     
     override func shouldAutorotate() -> Bool {
-        return false
+        return true
     }
     
     override func preferredInterfaceOrientationForPresentation() -> UIInterfaceOrientation {
-        return  UIInterfaceOrientation.LandscapeLeft
+        return  UIInterfaceOrientation.LandscapeRight
     }
     
     override func supportedInterfaceOrientations() -> Int {
-        return UIInterfaceOrientation.LandscapeLeft.rawValue
+        return Int(UIInterfaceOrientationMask.LandscapeLeft.rawValue | UIInterfaceOrientationMask.LandscapeRight.rawValue)
     }
     
-    // MARK: - move LevelTwo
-    func loadLevelTwo(){
+    // MARK: - loadNextLevel
+    func loadNextLevel(){
+        levelCount++
         let vc: LevelTwoViewController = self.storyboard?.instantiateViewControllerWithIdentifier("LevelTwoViewController") as! LevelTwoViewController
-        self.navigationController?.pushViewController(vc, animated: true)
+        var hasParScore: Bool = DVRandGen.skRandBool()
+        let hasParTime: Bool = DVRandGen.skRandBool()
+        if hasParScore == false && hasParTime == false {
+            hasParScore = true
+        }
+        vc.parScore = hasParScore ? Int(DVRandGen.skRand(5, high: 10)) + levelCount : 0
+        vc.parTime = hasParTime ? Int(DVRandGen.skRand(10, high: 20)) + levelCount : 0
+        self.navigationController?.setViewControllers([vc], animated: true)
     }
 }

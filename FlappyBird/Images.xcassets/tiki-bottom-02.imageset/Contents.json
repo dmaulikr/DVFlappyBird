@@ -3,12 +3,11 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "bird2.png"
+      "filename" : "tiki-bottom-02.png"
     },
     {
       "idiom" : "universal",
-      "scale" : "2x",
-      "filename" : "bird2@2x.png"
+      "scale" : "2x"
     },
     {
       "idiom" : "universal",

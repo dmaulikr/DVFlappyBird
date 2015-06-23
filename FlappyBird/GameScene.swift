@@ -70,7 +70,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var levelTitle: String = "Level 1"
     var levelSubTitle: String = "Survive 5 minutes"
     
+    var hasStarted: Bool = true
+    
     override func didMoveToView(view: SKView) {
+        
+        self.physicsWorld.contactDelegate = self
+        self.physicsWorld.gravity = CGVectorMake(0, -5.0)
         
         /*for fontName in UIFont.familyNames(){
             println(fontName)
@@ -78,7 +83,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //view.backgroundColor = UIColor.redColor()
         let pipeHeight: CGFloat = (view.bounds.size.height - space) / 2
-        println("pipeHeight: \(pipeHeight)")
         mainPipe = Pipe(color: UIColor.blackColor(), size: CGSizeMake(50, pipeHeight))
         mainPipe.anchorPoint = CGPointMake(0, 0)
         //println("\(view.bounds.size.width), \(view.bounds.size.height)")
@@ -88,10 +92,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addGround()
         addBackground()
         birdSetup()
-        
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1000 * Int64(NSEC_PER_MSEC)), dispatch_get_main_queue()){
-            self.viewController.loadLevelTwo()
-        }
     }
     
     func addBackground(){
@@ -113,6 +113,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func addGround(){
         ground1 = SKSpriteNode(imageNamed: "Ground")
+        ground1.name = "ground"
         ground1.zPosition = 10
         ground1.size.width = view!.bounds.size.width + 5
         ground1.texture?.filteringMode = SKTextureFilteringMode.Nearest
@@ -122,6 +123,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         ground1.physicsBody!.dynamic = false
         
         ground2 = SKSpriteNode(imageNamed: "Ground")
+        ground2.name = "ground"
         ground2.zPosition = 10
         ground2.size.width = view!.bounds.size.width
         ground2.texture?.filteringMode = SKTextureFilteringMode.Nearest
@@ -161,9 +163,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         bird.zPosition = 9
         bird.position = CGPointMake(CGRectGetMidX(view!.frame), CGRectGetMidY(view!.frame))
         
-        self.physicsWorld.contactDelegate = self
-        self.physicsWorld.gravity = CGVectorMake(0, -5.0)
-        
         birdAnimation = SKAction.repeatActionForever(SKAction.animateWithTextures(birdFrames, timePerFrame: 0.15, resize: false, restore: true))
         bird.runAction(birdAnimation, withKey: "birdAnimation")
         
@@ -175,8 +174,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         let pipeBot: Pipe = mainPipe.copy() as! Pipe
         let pipeTop: Pipe = mainPipe.copy() as! Pipe
-        
-        pipeBot.isBottom = true
         
         pipeBot.texture = SKTexture(imageNamed: "BotPipe")
         pipeTop.texture = SKTexture(imageNamed: "TopPipe")
@@ -192,6 +189,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //println("offset: \(offset)")
         
         if(randHeight < view!.bounds.size.height - space - 60){
+            pipeBot.isBottom = true
+            
             pipeBot.size.height = randHeight
             pipeBot.physicsBody = SKPhysicsBody(rectangleOfSize: pipeBot.size, center: CGPointMake(pipeBot.size.width/2, pipeBot.size.height/2))
             pipeBot.physicsBody!.dynamic = false
@@ -214,6 +213,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.addChild(pipeTop)
         }else{
             if DVRandGen.skRandBool(){
+                pipeBot.isBottom = true
+                
                 pipeBot.size.height = randHeight
                 pipeBot.physicsBody = SKPhysicsBody(rectangleOfSize: pipeBot.size, center: CGPointMake(pipeBot.size.width/2, pipeBot.size.height/2))
                 pipeBot.physicsBody!.dynamic = false
@@ -224,6 +225,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 pipes.append(pipeBot)
                 self.addChild(pipeBot)
             }else{
+                pipeTop.isBottom = true
+                
                 pipeTop.size.height = randHeight
                 pipeTop.physicsBody = SKPhysicsBody(rectangleOfSize: pipeTop.size, center: CGPointMake(pipeTop.size.width/2, pipeTop.size.height/2))
                 pipeTop.physicsBody!.dynamic = false
@@ -246,7 +249,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
-        if !isBirdMoving{
+        if !isBirdMoving || !hasStarted{
             for touch in touches{
                 if let t: UITouch = touch as? UITouch{
                     let touchLocation = t.locationInNode(self)
@@ -268,28 +271,36 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                             self.isBackgroundMoving = true
                             self.birdAnimation = SKAction.repeatActionForever(SKAction.animateWithTextures(self.birdFrames, timePerFrame: 0.15, resize: false, restore: true))
                             self.bird.runAction(self.birdAnimation, withKey: "birdAnimation")
+                            self.hasStarted = true
+                        }
+                    })
+                    self.enumerateChildNodesWithName("nextLevelNode", usingBlock: { (node: SKNode!, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
+                        if node.containsPoint(touchLocation){
+                            self.viewController.loadNextLevel()
                         }
                     })
                 }
             }
         }
-        if(!bird.physicsBody!.dynamic){
-            // First Touch
-            self.removeLevelBegining()
-            self.spawnPipeRow()
-            bird.physicsBody!.velocity = CGVectorMake(0, 175)
-            isBirdMoving = true
-            bird.physicsBody!.dynamic = true
-        }else if(isBirdMoving){
-            var vel: CGFloat = 200
-            if self.view!.bounds.size.height - bird.position.y < 85{
-                vel == 85 - (self.view!.bounds.size.height - bird.position.y)
-            }
-            bird.physicsBody?.velocity = CGVectorMake(0, vel)
-            
-            for touch in touches{
-                if let t: UITouch = touch as? UITouch{
-                    self.touchPrevPosition = t.locationInView(self.view)
+        if hasStarted{
+            if(!bird.physicsBody!.dynamic){
+                // First Touch
+                self.removeLevelBegining()
+                self.spawnPipeRow()
+                bird.physicsBody!.velocity = CGVectorMake(0, 175)
+                isBirdMoving = true
+                bird.physicsBody!.dynamic = true
+            }else if(isBirdMoving){
+                var vel: CGFloat = 200
+                if self.view!.bounds.size.height - bird.position.y < 85{
+                    vel == 85 - (self.view!.bounds.size.height - bird.position.y)
+                }
+                bird.physicsBody?.velocity = CGVectorMake(0, vel)
+                
+                for touch in touches{
+                    if let t: UITouch = touch as? UITouch{
+                        self.touchPrevPosition = t.locationInView(self.view)
+                    }
                 }
             }
         }
@@ -341,7 +352,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                         pipe.removeFromParent()
                     }
                     
-                    if pipe.position.x + pipe.size.width < bird.position.x && pipe.isBottom && !pipe.isPointAdded{
+                    if hasStarted && pipe.position.x + pipe.size.width < bird.position.x && pipe.isBottom && !pipe.isPointAdded{
                         score++
                         pipe.isPointAdded = true
                         if parScore > 0 && score >= parScore{
@@ -367,6 +378,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func didBeginContact(contact: SKPhysicsContact) {
+        hasStarted = false
         if(isBirdMoving){
             self.timer?.invalidate()
             isBackgroundMoving = false
@@ -380,11 +392,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.showLevelFailed()
             }
         }else{
+            if contact.bodyA?.node!.name == "bird" || contact.bodyB?.node!.name == "ground"{
+                bird.physicsBody?.dynamic = false
+            }else if contact.bodyB?.node!.name == "bird" || contact.bodyA?.node!.name == "ground"{
+                bird.physicsBody?.dynamic = false
+            }
             bird.physicsBody!.velocity = CGVectorMake(0, 0)
         }
     }
     
-    func showLevelBegining(title: String? = nil, subTitle: String? = nil){
+    func showLevelBegining(title: String? = nil, subTitle: String? = nil, y: CGFloat? = 0){
         
         overlay = SKSpriteNode(color: SKColor.blackColor().colorWithAlphaComponent(0.3), size: self.frame.size)
         overlay!.zPosition = 99
@@ -396,7 +413,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         titleNode.name = "titleNode"
         titleNode.text = title != nil ? title!: levelTitle
         titleNode.fontSize = 50
-        titleNode.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame))
+        titleNode.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame) + y!)
         
         let titleShadow: SKLabelNode = SKLabelNode(fontNamed: "Marker Felt")
         titleShadow.fontColor = SKColor.whiteColor()
@@ -411,6 +428,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let min: Int = self.parTime / 60
             let sec: Int = self.parTime % 60
             levelSubTitle = NSString(format: "Survive %02d:%02d", min, sec) as String
+        }
+        if parScore > 0{
+            levelSubTitle = "Score \(parScore)"
+        }
+        if parTime > 0 && parScore > 0{
+            let min: Int = self.parTime / 60
+            let sec: Int = self.parTime % 60
+            levelSubTitle = NSString(format: "Survive %02d:%02d or score %d", min, sec, parScore) as String
         }
         
         let subTitleNode: SKLabelNode = SKLabelNode(fontNamed: "Noteworthy")
@@ -538,16 +563,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func showLevelCompleted(){
         self.timer?.invalidate()
-        isBackgroundMoving = false
-        isBirdMoving = false
-        bird.removeActionForKey("birdAnimation")
-        for (index, pipe) in enumerate(pipes as [SKSpriteNode]){
-            pipe.physicsBody = nil
-        }
-        bird.physicsBody!.velocity = CGVectorMake(0, 0)
+        bird.physicsBody!.dynamic = false
+        hasStarted = false
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 500 * Int64(NSEC_PER_MSEC)), dispatch_get_main_queue()){
-            self.showLevelBegining(title: "\(self.levelTitle) completed", subTitle: "Score: \(self.score)")
+            self.showLevelBegining(title: "\(self.levelTitle) completed", subTitle: "Score: \(self.score)", y: 50)
+            
+            let subtitleNode: SKLabelNode = self.childNodeWithName("subtitleNode") as! SKLabelNode
+            
+            let subTitleNode: SKLabelNode = SKLabelNode(fontNamed: "Noteworthy-Bold")
+            subTitleNode.fontColor = SKColor.redColor()
+            subTitleNode.zPosition = 100
+            subTitleNode.name = "nextLevelNode"
+            subTitleNode.text = "Play Next"
+            subTitleNode.fontSize = 40
+            subTitleNode.position = CGPointMake(CGRectGetMidX(self.frame), subtitleNode.position.y - 50)
+            
+            let subtitleShadow: SKLabelNode = SKLabelNode(fontNamed: "Noteworthy-Bold")
+            subtitleShadow.fontColor = SKColor.greenColor()
+            subtitleShadow.name = "subtitleShadow"
+            subtitleShadow.text = subTitleNode.text
+            subtitleShadow.fontSize = 40
+            subtitleShadow.position = CGPointMake(subtitleShadow.position.x - 2, subtitleShadow.position.y - 2)
+            
+            subTitleNode.addChild(subtitleShadow)
+            
+            self.addChild(subTitleNode)
         }
     }
 }
