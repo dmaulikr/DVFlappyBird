@@ -14,7 +14,7 @@ class LevelTwo: SKScene, SKPhysicsContactDelegate {
     
     var viewController: LevelTwoViewController!
     
-    let groundSpeed: CGFloat = 2
+    let movingSpeed: CGFloat = 2
     var grounds: [SKSpriteNode] = [SKSpriteNode]()
     var groundWidth: CGFloat!
     
@@ -67,20 +67,42 @@ class LevelTwo: SKScene, SKPhysicsContactDelegate {
     
     var hasStarted: Bool = true
     
+    // Preloaded Label & font
+    var noteworthyLabel: SKLabelNode!
+    var noteworthyLabelBold: SKLabelNode!
+    var markerLabel: SKLabelNode!
+    
     override func didMoveToView(view: SKView) {
         
         self.physicsWorld.contactDelegate = self
         self.physicsWorld.gravity = CGVectorMake(0, -5.0)
         
+        preloadLabelFont()
+        
         showLevelBegining()
         
         let pipeHeight: CGFloat = (view.bounds.size.height - space) / 2
         mainPipe = Pipe(color: UIColor.blackColor(), size: CGSizeMake(50, pipeHeight))
-        mainPipe.zPosition = 4
+        mainPipe.zPosition = DVRandGen.skRand(2, high: 4)
+        println(mainPipe.zPosition)
         mainPipe.anchorPoint = CGPointMake(0, 0)
         
         setupScenery()
         setupBird()
+    }
+    
+    func preloadLabelFont(){
+        noteworthyLabel = SKLabelNode(fontNamed: "Noteworthy-Light")
+        noteworthyLabel.text = "preloadedText"
+        noteworthyLabel.fontSize = 30
+        
+        noteworthyLabelBold = SKLabelNode(fontNamed: "Noteworthy-Bold")
+        noteworthyLabelBold.text = "preloadedText"
+        noteworthyLabelBold.fontSize = 30
+        
+        markerLabel = SKLabelNode(fontNamed: "MarkerFelt-Thin")
+        markerLabel.text = "preloadedText"
+        markerLabel.fontSize = 50
     }
     
     func setupBird(){
@@ -166,11 +188,11 @@ class LevelTwo: SKScene, SKPhysicsContactDelegate {
             var groundHeight: CGFloat = groundWidth / aspectRatio
             groundHeight = groundHeight > 50 ? 50 : groundHeight
             
-            ground.size = CGSizeMake(groundWidth + groundSpeed * 5, groundHeight)
+            ground.size = CGSizeMake(groundWidth + movingSpeed * 5, groundHeight)
             
             //println(ground.size)
             ground.position = CGPointMake(CGFloat(i) * groundWidth, 0)
-            ground.zPosition = 2
+            ground.zPosition = 3
             
             //let label: SKLabelNode = SKLabelNode(text: "ground \(i)")
             //label.position = CGPointMake(groundWidth / 2, groundHeight / 2)
@@ -344,9 +366,9 @@ class LevelTwo: SKScene, SKPhysicsContactDelegate {
     override func update(currentTime: CFTimeInterval) {
         if(isBackgroundMoving){
             for ground in grounds{
-                ground.position.x -= groundSpeed
+                ground.position.x -= movingSpeed
                 if ground.position.x <= -groundWidth{
-                    ground.position.x = CGFloat(grounds.count - 1) * groundWidth - groundSpeed
+                    ground.position.x = CGFloat(grounds.count - 1) * groundWidth - movingSpeed
                 }
             }
             
@@ -355,11 +377,26 @@ class LevelTwo: SKScene, SKPhysicsContactDelegate {
                     hill.removeFromParent()
                 }
                 
-                hill.position.x -= groundSpeed / 2
+                hill.position.x -= movingSpeed / 2
                 if index == hills.count - 1{
                     if hill.position.x  < self.view!.bounds.width - hill.size.width{
                         self.addHills(nil)
                     }
+                }
+            }
+            
+            if isBirdMoving && (bird.position.x + bird.size.width/2 < 0  || bird.position.x - bird.size.width/2 > self.view!.bounds.width || bird.position.y - bird.size.height/2 > self.view!.bounds.height || bird.position.y + bird.size.height/2 < 0){
+                hasStarted = false
+                self.timer?.invalidate()
+                isBackgroundMoving = false
+                isBirdMoving = false
+                bird.removeActionForKey("birdAnimation")
+                for (index, pipe) in enumerate(pipes as [SKSpriteNode]){
+                    pipe.physicsBody = nil
+                }
+                bird.physicsBody!.velocity = CGVectorMake(0, 0)
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 500 * Int64(NSEC_PER_MSEC)), dispatch_get_main_queue()){
+                    self.showLevelFailed()
                 }
             }
             
@@ -378,7 +415,7 @@ class LevelTwo: SKScene, SKPhysicsContactDelegate {
                         }
                     }
                     
-                    pipe.position.x -= groundSpeed
+                    pipe.position.x -= movingSpeed
                     if index == pipes.count - 1{
                         if(pipe.position.x  < self.view!.bounds.width - pipe.size.width * 2){
                             self.addPipes()
@@ -426,19 +463,19 @@ class LevelTwo: SKScene, SKPhysicsContactDelegate {
         overlay!.zPosition = 99
         overlay!.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame))
         
-        let titleNode: SKLabelNode = SKLabelNode(fontNamed: "Marker Felt")
+        let titleNode: SKLabelNode = markerLabel.copy() as! SKLabelNode
         titleNode.fontColor = SKColor.blackColor()
         titleNode.zPosition = 100
         titleNode.name = "titleNode"
         titleNode.text = title != nil ? title!: levelTitle
-        titleNode.fontSize = 50
+        //titleNode.fontSize = 50
         titleNode.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame) + y!)
         
-        let titleShadow: SKLabelNode = SKLabelNode(fontNamed: "Marker Felt")
+        let titleShadow: SKLabelNode = markerLabel.copy() as! SKLabelNode
         titleShadow.fontColor = SKColor.whiteColor()
         titleShadow.name = "titleShadow"
         titleShadow.text = titleNode.text
-        titleShadow.fontSize = 50
+        //titleShadow.fontSize = 50
         titleShadow.position = CGPointMake(titleShadow.position.x - 3, titleShadow.position.y - 3)
         
         titleNode.addChild(titleShadow)
@@ -457,19 +494,19 @@ class LevelTwo: SKScene, SKPhysicsContactDelegate {
             levelSubTitle = NSString(format: "Survive %02d:%02d or score %d", min, sec, parScore) as String
         }
         
-        let subTitleNode: SKLabelNode = SKLabelNode(fontNamed: "Noteworthy")
+        let subTitleNode: SKLabelNode = noteworthyLabel.copy() as! SKLabelNode
         subTitleNode.fontColor = SKColor.blackColor()
         subTitleNode.zPosition = 100
         subTitleNode.name = "subtitleNode"
         subTitleNode.text = subTitle != nil ? subTitle! : levelSubTitle
-        subTitleNode.fontSize = 30
+        //subTitleNode.fontSize = 30
         subTitleNode.position = CGPointMake(CGRectGetMidX(self.frame), titleNode.position.y - 50)
         
-        let subtitleShadow: SKLabelNode = SKLabelNode(fontNamed: "Noteworthy")
+        let subtitleShadow: SKLabelNode = noteworthyLabel.copy() as! SKLabelNode
         subtitleShadow.fontColor = SKColor.whiteColor()
         subtitleShadow.name = "subtitleShadow"
         subtitleShadow.text = subTitleNode.text
-        subtitleShadow.fontSize = 30
+        //subtitleShadow.fontSize = 30
         subtitleShadow.position = CGPointMake(subtitleShadow.position.x - 1, subtitleShadow.position.y - 1)
         
         subTitleNode.addChild(subtitleShadow)
@@ -499,7 +536,7 @@ class LevelTwo: SKScene, SKPhysicsContactDelegate {
         
         removeScoreLabel()
         
-        scoreLabel = SKLabelNode(fontNamed: "Noteworthy-Bold")
+        scoreLabel = noteworthyLabelBold.copy() as! SKLabelNode
         scoreLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.Left
         scoreLabel.name = "scoreLabel"
         scoreLabel.fontColor = SKColor.whiteColor()
@@ -525,7 +562,7 @@ class LevelTwo: SKScene, SKPhysicsContactDelegate {
         
         removeTimeLabel()
         
-        timeLabel = SKLabelNode(fontNamed: "Noteworthy-Bold")
+        timeLabel = noteworthyLabelBold.copy() as! SKLabelNode
         timeLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.Right
         timeLabel.name = "timeLabel"
         timeLabel.fontColor = SKColor.whiteColor()
@@ -560,19 +597,19 @@ class LevelTwo: SKScene, SKPhysicsContactDelegate {
     func showLevelFailed(){
         showLevelBegining(title: "\(levelTitle) failed", subTitle: "")
         
-        let subTitleNode: SKLabelNode = SKLabelNode(fontNamed: "Noteworthy-Bold")
+        let subTitleNode: SKLabelNode = noteworthyLabelBold.copy() as! SKLabelNode
         subTitleNode.fontColor = SKColor.blackColor()
         subTitleNode.zPosition = 100
         subTitleNode.name = "restartNode"
         subTitleNode.text = "Restart"
-        subTitleNode.fontSize = 30
+        //subTitleNode.fontSize = 30
         subTitleNode.position = CGPointMake(CGRectGetMidX(self.frame), 100)
         
-        let subtitleShadow: SKLabelNode = SKLabelNode(fontNamed: "Noteworthy-Bold")
+        let subtitleShadow: SKLabelNode = noteworthyLabelBold.copy() as! SKLabelNode
         subtitleShadow.fontColor = SKColor.greenColor()
         subtitleShadow.name = "subtitleShadow"
         subtitleShadow.text = subTitleNode.text
-        subtitleShadow.fontSize = 30
+        //subtitleShadow.fontSize = 30
         subtitleShadow.position = CGPointMake(subtitleShadow.position.x - 2, subtitleShadow.position.y - 2)
         
         subTitleNode.addChild(subtitleShadow)
@@ -590,7 +627,7 @@ class LevelTwo: SKScene, SKPhysicsContactDelegate {
             
             let subtitleNode: SKLabelNode = self.childNodeWithName("subtitleNode") as! SKLabelNode
             
-            let subTitleNode: SKLabelNode = SKLabelNode(fontNamed: "Noteworthy-Bold")
+            let subTitleNode: SKLabelNode = self.noteworthyLabelBold.copy() as! SKLabelNode
             subTitleNode.fontColor = SKColor.redColor()
             subTitleNode.zPosition = 100
             subTitleNode.name = "nextLevelNode"
@@ -598,7 +635,7 @@ class LevelTwo: SKScene, SKPhysicsContactDelegate {
             subTitleNode.fontSize = 40
             subTitleNode.position = CGPointMake(CGRectGetMidX(self.frame), subtitleNode.position.y - 50)
             
-            let subtitleShadow: SKLabelNode = SKLabelNode(fontNamed: "Noteworthy-Bold")
+            let subtitleShadow: SKLabelNode = self.noteworthyLabelBold.copy() as! SKLabelNode
             subtitleShadow.fontColor = SKColor.greenColor()
             subtitleShadow.name = "subtitleShadow"
             subtitleShadow.text = subTitleNode.text
