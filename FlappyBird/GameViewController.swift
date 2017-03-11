@@ -28,7 +28,7 @@ class GameViewController: UIViewController {
         //spriteView.showsPhysics = true
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         scene = GameScene()
@@ -36,23 +36,23 @@ class GameViewController: UIViewController {
         scene.parTime = self.parTime
         scene.levelTitle = self.levelTitle
         scene.viewController = self
-        scene.backgroundColor = SKColor.whiteColor()
+        scene.backgroundColor = SKColor.white
         //hello.size = CGSizeMake(768, 1024)
         scene.size = self.view.bounds.size
-        println(scene.size)
+        print(scene.size)
         
         let spriteView: SKView = self.view as! SKView
         spriteView.presentScene(scene)
     }
     
-    override func viewDidDisappear(animated: Bool) {
+    override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
         self.scene.removeAllActions()
         self.scene.removeAllChildren()
         
         let spriteView: SKView = self.view as! SKView
-        spriteView.paused = true
+        spriteView.isPaused = true
         spriteView.presentScene(nil)
         spriteView.removeFromSuperview()
         
@@ -64,26 +64,26 @@ class GameViewController: UIViewController {
         // Release any cached data, images, etc that aren't in use.
     }
 
-    override func prefersStatusBarHidden() -> Bool {
+    override var prefersStatusBarHidden : Bool {
         return true
     }
     
-    override func shouldAutorotate() -> Bool {
+    override var shouldAutorotate : Bool {
         return true
     }
     
-    override func preferredInterfaceOrientationForPresentation() -> UIInterfaceOrientation {
-        return  UIInterfaceOrientation.LandscapeRight
+    override var preferredInterfaceOrientationForPresentation : UIInterfaceOrientation {
+        return  UIInterfaceOrientation.landscapeRight
     }
     
-    override func supportedInterfaceOrientations() -> Int {
-        return Int(UIInterfaceOrientationMask.LandscapeLeft.rawValue | UIInterfaceOrientationMask.LandscapeRight.rawValue)
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return UIInterfaceOrientationMask(rawValue: UInt(Int(UIInterfaceOrientationMask.landscapeLeft.rawValue | UIInterfaceOrientationMask.landscapeRight.rawValue)))
     }
     
     // MARK: - loadNextLevel
     func loadNextLevel(){
-        levelCount++
-        let vc: LevelTwoViewController = self.storyboard?.instantiateViewControllerWithIdentifier("LevelTwoViewController") as! LevelTwoViewController
+        levelCount += 1
+        let vc: LevelTwoViewController = self.storyboard?.instantiateViewController(withIdentifier: "LevelTwoViewController") as! LevelTwoViewController
         var hasParScore: Bool = DVRandGen.skRandBool()
         let hasParTime: Bool = DVRandGen.skRandBool()
         if hasParScore == false && hasParTime == false {

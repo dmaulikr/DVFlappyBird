@@ -23,13 +23,13 @@ class NavigationViewController: UINavigationController {
         // Dispose of any resources that can be recreated.
     }
 
-    override func supportedInterfaceOrientations() -> Int {
-        return self.viewControllers.last!.supportedInterfaceOrientations()
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return self.viewControllers.last!.supportedInterfaceOrientations
         
     }
     
-    override func shouldAutorotate() -> Bool {
-        return self.viewControllers.last!.shouldAutorotate()
+    override var shouldAutorotate : Bool {
+        return self.viewControllers.last!.shouldAutorotate
     }
 
 }

@@ -52,7 +52,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    var timer: NSTimer?
+    var timer: Timer?
     
     var space: CGFloat = 120
     
@@ -77,10 +77,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var noteworthyLabelBold: SKLabelNode!
     var markerLabel: SKLabelNode!
     
-    override func didMoveToView(view: SKView) {
+    override func didMove(to view: SKView) {
         
         self.physicsWorld.contactDelegate = self
-        self.physicsWorld.gravity = CGVectorMake(0, -5.0)
+        self.physicsWorld.gravity = CGVector(dx: 0, dy: -5.0)
         
         /*for fontName in UIFont.familyNames(){
             println(fontName)
@@ -91,8 +91,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //view.backgroundColor = UIColor.redColor()
         let pipeHeight: CGFloat = (view.bounds.size.height - space) / 2
-        mainPipe = Pipe(color: UIColor.blackColor(), size: CGSizeMake(50, pipeHeight))
-        mainPipe.anchorPoint = CGPointMake(0, 0)
+        mainPipe = Pipe(color: UIColor.black, size: CGSize(width: 50, height: pipeHeight))
+        mainPipe.anchorPoint = CGPoint(x: 0, y: 0)
         //println("\(view.bounds.size.width), \(view.bounds.size.height)")
         
         preloadLabelFont()
@@ -121,13 +121,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func addBackground(){
         background1 = SKSpriteNode(imageNamed: "l1bg")
         background1.size = view!.bounds.size
-        background1.texture?.filteringMode = SKTextureFilteringMode.Nearest
+        background1.texture?.filteringMode = SKTextureFilteringMode.nearest
         background1.position.x = view!.bounds.size.width / 2
         background1.position.y = view!.bounds.size.height / 2
         
         background2 = SKSpriteNode(imageNamed: "l1bg")
         background2.size = view!.bounds.size
-        background2.texture?.filteringMode = SKTextureFilteringMode.Nearest
+        background2.texture?.filteringMode = SKTextureFilteringMode.nearest
         background2.position.x = view!.bounds.size.width * 1.5
         background2.position.y = view!.bounds.size.height / 2
         
@@ -140,21 +140,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         ground1.name = "ground"
         ground1.zPosition = 10
         ground1.size.width = view!.bounds.size.width + 5
-        ground1.texture?.filteringMode = SKTextureFilteringMode.Nearest
+        ground1.texture?.filteringMode = SKTextureFilteringMode.nearest
         ground1.position.x = view!.bounds.size.width / 2
         ground1.position.y = 0
-        ground1.physicsBody = SKPhysicsBody(texture: ground1.texture, size: ground1.size)
-        ground1.physicsBody!.dynamic = false
+        ground1.physicsBody = SKPhysicsBody(texture: ground1.texture!, size: ground1.size)
+        ground1.physicsBody!.isDynamic = false
         
         ground2 = SKSpriteNode(imageNamed: "Ground")
         ground2.name = "ground"
         ground2.zPosition = 10
         ground2.size.width = view!.bounds.size.width
-        ground2.texture?.filteringMode = SKTextureFilteringMode.Nearest
+        ground2.texture?.filteringMode = SKTextureFilteringMode.nearest
         ground2.position.x = view!.bounds.size.width * 1.5
         ground2.position.y = 0
-        ground2.physicsBody = SKPhysicsBody(texture: ground2.texture, size: ground2.size)
-        ground2.physicsBody!.dynamic = false
+        ground2.physicsBody = SKPhysicsBody(texture: ground2.texture!, size: ground2.size)
+        ground2.physicsBody!.isDynamic = false
         
         self.addChild(ground1)
         self.addChild(ground2)
@@ -162,33 +162,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func birdSetup(){
         
-        for(var i = 0; i < 3; i++){
+        for i in 0 ..< 3{
             var textureName = "bird\(i)"
-            if i == 0{
-                var textureName = "bird"
-            }
-            var texture = birdAtlas.textureNamed(textureName)
+            let texture = birdAtlas.textureNamed(textureName)
             birdFrames.append(texture)
         }
-        
         let frameSize: CGSize = birdFrames[0].size()
         
-        bird = SKSpriteNode(texture: birdFrames[0], size: CGSizeMake(frameSize.width/2, frameSize.height/2))
+        bird = SKSpriteNode(texture: birdFrames[0], size: CGSize(width: frameSize.width/2, height: frameSize.height/2))
         bird.name = "bird"
         bird.zRotation = 0
-        bird.physicsBody = SKPhysicsBody(texture: bird.texture, size: bird.size)
+        bird.physicsBody = SKPhysicsBody(texture: bird.texture!, size: bird.size)
         //bird = SKShapeNode(circleOfRadius: 15)
         //bird.physicsBody = SKPhysicsBody(circleOfRadius: 15)
         //bird.fillColor = SKColor.redColor()
-        bird.physicsBody!.dynamic = false
+        bird.physicsBody!.isDynamic = false
         bird.physicsBody!.contactTestBitMask = pipeCategory
         bird.physicsBody!.collisionBitMask = pipeCategory
         
         bird.zPosition = 9
-        bird.position = CGPointMake(CGRectGetMidX(view!.frame), CGRectGetMidY(view!.frame))
+        bird.position = CGPoint(x: view!.frame.midX, y: view!.frame.midY)
         
-        birdAnimation = SKAction.repeatActionForever(SKAction.animateWithTextures(birdFrames, timePerFrame: 0.15, resize: false, restore: true))
-        bird.runAction(birdAnimation, withKey: "birdAnimation")
+        birdAnimation = SKAction.repeatForever(SKAction.animate(with: birdFrames, timePerFrame: 0.15, resize: false, restore: true))
+        bird.run(birdAnimation, withKey: "birdAnimation")
         
         self.addChild(bird)
     }
@@ -202,8 +198,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         pipeBot.texture = SKTexture(imageNamed: "BotPipe")
         pipeTop.texture = SKTexture(imageNamed: "TopPipe")
         
-        pipeBot.texture?.filteringMode = SKTextureFilteringMode.Nearest
-        pipeTop.texture?.filteringMode = SKTextureFilteringMode.Nearest
+        pipeBot.texture?.filteringMode = SKTextureFilteringMode.nearest
+        pipeTop.texture?.filteringMode = SKTextureFilteringMode.nearest
         
         let randHeight: CGFloat = DVRandGen.skRand(70, high: (view!.bounds.size.height - space))
         //println("randHeight: \(randHeight)")
@@ -216,14 +212,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             pipeBot.isBottom = true
             
             pipeBot.size.height = randHeight
-            pipeBot.physicsBody = SKPhysicsBody(rectangleOfSize: pipeBot.size, center: CGPointMake(pipeBot.size.width/2, pipeBot.size.height/2))
-            pipeBot.physicsBody!.dynamic = false
+            pipeBot.physicsBody = SKPhysicsBody(rectangleOf: pipeBot.size, center: CGPoint(x: pipeBot.size.width/2, y: pipeBot.size.height/2))
+            pipeBot.physicsBody!.isDynamic = false
             pipeBot.physicsBody!.contactTestBitMask = birdCategory
             pipeBot.physicsBody!.collisionBitMask = birdCategory
             
             pipeTop.size.height = view!.bounds.size.height - space - randHeight
-            pipeTop.physicsBody = SKPhysicsBody(rectangleOfSize: pipeTop.size, center: CGPointMake(pipeTop.size.width/2, pipeTop.size.height/2))
-            pipeTop.physicsBody!.dynamic = false
+            pipeTop.physicsBody = SKPhysicsBody(rectangleOf: pipeTop.size, center: CGPoint(x: pipeTop.size.width/2, y: pipeTop.size.height/2))
+            pipeTop.physicsBody!.isDynamic = false
             pipeTop.physicsBody!.contactTestBitMask = birdCategory
             pipeTop.physicsBody!.collisionBitMask = birdCategory
             
@@ -240,8 +236,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 pipeBot.isBottom = true
                 
                 pipeBot.size.height = randHeight
-                pipeBot.physicsBody = SKPhysicsBody(rectangleOfSize: pipeBot.size, center: CGPointMake(pipeBot.size.width/2, pipeBot.size.height/2))
-                pipeBot.physicsBody!.dynamic = false
+                pipeBot.physicsBody = SKPhysicsBody(rectangleOf: pipeBot.size, center: CGPoint(x: pipeBot.size.width/2, y: pipeBot.size.height/2))
+                pipeBot.physicsBody!.isDynamic = false
                 pipeBot.physicsBody!.contactTestBitMask = birdCategory
                 pipeBot.physicsBody!.collisionBitMask = birdCategory
                 
@@ -252,8 +248,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 pipeTop.isBottom = true
                 
                 pipeTop.size.height = randHeight
-                pipeTop.physicsBody = SKPhysicsBody(rectangleOfSize: pipeTop.size, center: CGPointMake(pipeTop.size.width/2, pipeTop.size.height/2))
-                pipeTop.physicsBody!.dynamic = false
+                pipeTop.physicsBody = SKPhysicsBody(rectangleOf: pipeTop.size, center: CGPoint(x: pipeTop.size.width/2, y: pipeTop.size.height/2))
+                pipeTop.physicsBody!.isDynamic = false
                 pipeTop.physicsBody!.contactTestBitMask = birdCategory
                 pipeTop.physicsBody!.collisionBitMask = birdCategory
                 
@@ -264,91 +260,85 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    func setPositionRelativeBot(node: SKSpriteNode, x: CGFloat, y: CGFloat){
-        node.position = CGPointMake(x, 0)
+    func setPositionRelativeBot(_ node: SKSpriteNode, x: CGFloat, y: CGFloat){
+        node.position = CGPoint(x: x, y: 0)
     }
     
-    func setPositionRelativeTop(node: SKSpriteNode, x: CGFloat, y: CGFloat){
-        node.position = CGPointMake(x, view!.bounds.size.height - node.size.height)
+    func setPositionRelativeTop(_ node: SKSpriteNode, x: CGFloat, y: CGFloat){
+        node.position = CGPoint(x: x, y: view!.bounds.size.height - node.size.height)
     }
     
-    override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if !isBirdMoving || !hasStarted{
             for touch in touches{
-                if let t: UITouch = touch as? UITouch{
-                    let touchLocation = t.locationInNode(self)
-                    self.enumerateChildNodesWithName("restartNode", usingBlock: { (node: SKNode!, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
-                        if node.containsPoint(touchLocation){
-                            self.overlay?.removeFromParent()
-                            self.removeLevelBegining()
-                            
-                            for (index, pipe) in enumerate(self.pipes as [Pipe]){
-                                pipe.removeFromParent()
-                            }
-                            
-                            self.pipes.removeAll(keepCapacity: false)
-                            self.score = 0
-                            self.bird.physicsBody?.dynamic = false
-                            self.bird.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame))
-                            self.bird.physicsBody!.velocity = CGVectorMake(0, 175)
-                            self.isBirdMoving = true
-                            self.isBackgroundMoving = true
-                            self.birdAnimation = SKAction.repeatActionForever(SKAction.animateWithTextures(self.birdFrames, timePerFrame: 0.15, resize: false, restore: true))
-                            self.bird.runAction(self.birdAnimation, withKey: "birdAnimation")
-                            self.hasStarted = true
+                let touchLocation = touch.location(in: self)
+                self.enumerateChildNodes(withName: "restartNode", using: { (node: SKNode!, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
+                    if node.contains(touchLocation){
+                        self.overlay?.removeFromParent()
+                        self.removeLevelBegining()
+                        
+                        for (_, pipe) in (self.pipes as [Pipe]).enumerated(){
+                            pipe.removeFromParent()
                         }
-                    })
-                    self.enumerateChildNodesWithName("nextLevelNode", usingBlock: { (node: SKNode!, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
-                        if node.containsPoint(touchLocation){
-                            self.viewController.loadNextLevel()
-                        }
-                    })
-                }
+                        
+                        self.pipes.removeAll(keepingCapacity: false)
+                        self.score = 0
+                        self.bird.physicsBody?.isDynamic = false
+                        self.bird.position = CGPoint(x: self.frame.midX, y: self.frame.midY)
+                        self.bird.physicsBody!.velocity = CGVector(dx: 0, dy: 175)
+                        self.isBirdMoving = true
+                        self.isBackgroundMoving = true
+                        self.birdAnimation = SKAction.repeatForever(SKAction.animate(with: self.birdFrames, timePerFrame: 0.15, resize: false, restore: true))
+                        self.bird.run(self.birdAnimation, withKey: "birdAnimation")
+                        self.hasStarted = true
+                    }
+                })
+                self.enumerateChildNodes(withName: "nextLevelNode", using: { (node: SKNode!, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
+                    if node.contains(touchLocation){
+                        self.viewController.loadNextLevel()
+                    }
+                })
             }
         }
         if hasStarted{
-            if(!bird.physicsBody!.dynamic){
+            if(!bird.physicsBody!.isDynamic){
                 // First Touch
                 self.removeLevelBegining()
                 self.spawnPipeRow()
-                bird.physicsBody!.velocity = CGVectorMake(0, 175)
+                bird.physicsBody!.velocity = CGVector(dx: 0, dy: 175)
                 isBirdMoving = true
-                bird.physicsBody!.dynamic = true
+                bird.physicsBody!.isDynamic = true
             }else if(isBirdMoving){
                 var vel: CGFloat = 200
                 if self.view!.bounds.size.height - bird.position.y < 85{
-                    vel == 85 - (self.view!.bounds.size.height - bird.position.y)
+                    vel = 85 - (self.view!.bounds.size.height - bird.position.y)
                 }
-                bird.physicsBody?.velocity = CGVectorMake(0, vel)
+                bird.physicsBody?.velocity = CGVector(dx: 0, dy: vel)
                 
                 for touch in touches{
-                    if let t: UITouch = touch as? UITouch{
-                        self.touchPrevPosition = t.locationInView(self.view)
-                    }
+                    self.touchPrevPosition = touch.location(in: self.view)
                 }
             }
         }
     }
     
-    override func touchesMoved(touches: Set<NSObject>, withEvent event: UIEvent) {
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         if(isBirdMoving && self.touchPrevPosition != nil){
             for touch in touches{
-                if let t: UITouch = touch as? UITouch{
-                    let location: CGPoint = t.locationInView(self.view)
-                    var velY: CGFloat = 50 - 1 * (location.y - self.touchPrevPosition.y)
-                    var velX: CGFloat = 50 + abs(location.x - self.touchPrevPosition.x)
-                    
-                    if(location.x - self.touchPrevPosition.x > 0){
-                        bird.physicsBody?.velocity = CGVectorMake(velX, velY)
-                    }else{
-                        bird.physicsBody?.velocity = CGVectorMake(-velX, velY)
-                    }
+                let location: CGPoint = touch.location(in: self.view)
+                let velY: CGFloat = 50 - 1 * (location.y - self.touchPrevPosition.y)
+                let velX: CGFloat = 50 + abs(location.x - self.touchPrevPosition.x)
+                
+                if(location.x - self.touchPrevPosition.x > 0){
+                    bird.physicsBody?.velocity = CGVector(dx: velX, dy: velY)
+                }else{
+                    bird.physicsBody?.velocity = CGVector(dx: -velX, dy: velY)
                 }
             }
         }
     }
    
-    override func update(currentTime: CFTimeInterval) {
+    override func update(_ currentTime: TimeInterval) {
         if(isBackgroundMoving){
             
             ground1.position.x -= movingSpeed
@@ -374,25 +364,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.timer?.invalidate()
                 isBackgroundMoving = false
                 isBirdMoving = false
-                bird.removeActionForKey("birdAnimation")
-                for (index, pipe) in enumerate(pipes as [SKSpriteNode]){
+                bird.removeAction(forKey: "birdAnimation")
+                for (_, pipe) in (pipes as [SKSpriteNode]).enumerated(){
                     pipe.physicsBody = nil
                 }
-                bird.physicsBody!.velocity = CGVectorMake(0, 0)
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 500 * Int64(NSEC_PER_MSEC)), dispatch_get_main_queue()){
+                bird.physicsBody!.velocity = CGVector(dx: 0, dy: 0)
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(500 * Int64(NSEC_PER_MSEC)) / Double(NSEC_PER_SEC)){
                     self.showLevelFailed()
                 }
             }
             
             if(isBirdMoving){
-                for (index, pipe) in enumerate(pipes as [Pipe]){
+                for (index, pipe) in (pipes as [Pipe]).enumerated(){
                     
                     if pipe.position.x + pipe.size.width < 0{
                         pipe.removeFromParent()
                     }
                     
                     if hasStarted && pipe.position.x + pipe.size.width < bird.position.x && pipe.isBottom && !pipe.isPointAdded{
-                        score++
+                        score += 1
                         pipe.isPointAdded = true
                         if parScore > 0 && score >= parScore{
                             self.showLevelCompleted()
@@ -411,55 +401,55 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func didSimulatePhysics() {
-        self.enumerateChildNodesWithName("bird", usingBlock: { (node: SKNode!, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
+        self.enumerateChildNodes(withName: "bird", using: { (node: SKNode!, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
             node.zRotation = 0
         })
     }
     
-    func didBeginContact(contact: SKPhysicsContact) {
+    func didBegin(_ contact: SKPhysicsContact) {
         hasStarted = false
         if(isBirdMoving){
             self.timer?.invalidate()
             isBackgroundMoving = false
             isBirdMoving = false
-            bird.removeActionForKey("birdAnimation")
-            for (index, pipe) in enumerate(pipes as [SKSpriteNode]){
+            bird.removeAction(forKey: "birdAnimation")
+            for (_, pipe) in (pipes as [SKSpriteNode]).enumerated(){
                 pipe.physicsBody = nil
             }
-            bird.physicsBody!.velocity = CGVectorMake(0, 0)
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 500 * Int64(NSEC_PER_MSEC)), dispatch_get_main_queue()){
+            bird.physicsBody!.velocity = CGVector(dx: 0, dy: 0)
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(500 * Int64(NSEC_PER_MSEC)) / Double(NSEC_PER_SEC)){
                 self.showLevelFailed()
             }
         }else{
-            if contact.bodyA?.node!.name == "bird" || contact.bodyB?.node!.name == "ground"{
-                bird.physicsBody?.dynamic = false
-            }else if contact.bodyB?.node!.name == "bird" || contact.bodyA?.node!.name == "ground"{
-                bird.physicsBody?.dynamic = false
+            if contact.bodyA.node!.name == "bird" || contact.bodyB.node!.name == "ground"{
+                bird.physicsBody?.isDynamic = false
+            }else if contact.bodyB.node!.name == "bird" || contact.bodyA.node!.name == "ground"{
+                bird.physicsBody?.isDynamic = false
             }
-            bird.physicsBody!.velocity = CGVectorMake(0, 0)
+            bird.physicsBody!.velocity = CGVector(dx: 0, dy: 0)
         }
     }
     
-    func showLevelBegining(title: String? = nil, subTitle: String? = nil, y: CGFloat? = 0){
+    func showLevelBegining(_ title: String? = nil, subTitle: String? = nil, y: CGFloat? = 0){
         
-        overlay = SKSpriteNode(color: SKColor.blackColor().colorWithAlphaComponent(0.3), size: self.frame.size)
+        overlay = SKSpriteNode(color: SKColor.black.withAlphaComponent(0.3), size: self.frame.size)
         overlay!.zPosition = 99
-        overlay!.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame))
+        overlay!.position = CGPoint(x: self.frame.midX, y: self.frame.midY)
         
         let titleNode: SKLabelNode = markerLabel.copy() as! SKLabelNode
-        titleNode.fontColor = SKColor.blackColor()
+        titleNode.fontColor = SKColor.black
         titleNode.zPosition = 100
         titleNode.name = "titleNode"
         titleNode.text = title != nil ? title!: levelTitle
         //titleNode.fontSize = 50
-        titleNode.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame) + y!)
+        titleNode.position = CGPoint(x: self.frame.midX, y: self.frame.midY + y!)
         
         let titleShadow: SKLabelNode = markerLabel.copy() as! SKLabelNode
-        titleShadow.fontColor = SKColor.whiteColor()
+        titleShadow.fontColor = SKColor.white
         titleShadow.name = "titleShadow"
         titleShadow.text = titleNode.text
         //titleShadow.fontSize = 50
-        titleShadow.position = CGPointMake(titleShadow.position.x - 3, titleShadow.position.y - 3)
+        titleShadow.position = CGPoint(x: titleShadow.position.x - 3, y: titleShadow.position.y - 3)
         
         titleNode.addChild(titleShadow)
         
@@ -478,19 +468,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         let subTitleNode: SKLabelNode = noteworthyLabel.copy() as! SKLabelNode
-        subTitleNode.fontColor = SKColor.blackColor()
+        subTitleNode.fontColor = SKColor.black
         subTitleNode.zPosition = 100
         subTitleNode.name = "subtitleNode"
         subTitleNode.text = subTitle != nil ? subTitle! : levelSubTitle
         //subTitleNode.fontSize = 30
-        subTitleNode.position = CGPointMake(CGRectGetMidX(self.frame), titleNode.position.y - 50)
+        subTitleNode.position = CGPoint(x: self.frame.midX, y: titleNode.position.y - 50)
         
         let subtitleShadow: SKLabelNode = noteworthyLabel.copy() as! SKLabelNode
-        subtitleShadow.fontColor = SKColor.whiteColor()
+        subtitleShadow.fontColor = SKColor.white
         subtitleShadow.name = "subtitleShadow"
         subtitleShadow.text = subTitleNode.text
         //subtitleShadow.fontSize = 30
-        subtitleShadow.position = CGPointMake(subtitleShadow.position.x - 1, subtitleShadow.position.y - 1)
+        subtitleShadow.position = CGPoint(x: subtitleShadow.position.x - 1, y: subtitleShadow.position.y - 1)
         
         subTitleNode.addChild(subtitleShadow)
         
@@ -501,14 +491,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func removeLevelBegining(){
         overlay?.removeFromParent()
-        self.enumerateChildNodesWithName("titleNode", usingBlock: { (node: SKNode!, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
+        self.enumerateChildNodes(withName: "titleNode", using: { (node: SKNode!, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
             node.removeFromParent()
         })
-        self.enumerateChildNodesWithName("subtitleNode", usingBlock: { (node: SKNode!, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
+        self.enumerateChildNodes(withName: "subtitleNode", using: { (node: SKNode!, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
             node.removeFromParent()
         })
         
-        self.enumerateChildNodesWithName("restartNode", usingBlock: { (node: SKNode!, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
+        self.enumerateChildNodes(withName: "restartNode", using: { (node: SKNode!, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
             node.removeFromParent()
         })
         
@@ -520,13 +510,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         removeScoreLabel()
         
         scoreLabel = noteworthyLabelBold.copy() as! SKLabelNode
-        scoreLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.Left
+        scoreLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
         scoreLabel.name = "scoreLabel"
-        scoreLabel.fontColor = SKColor.whiteColor()
+        scoreLabel.fontColor = SKColor.white
         scoreLabel.fontSize = 18
         scoreLabel.text = "Score: 0"
         scoreLabel.zPosition = 100
-        scoreLabel.position = CGPointMake(10, self.frame.size.height - 25)
+        scoreLabel.position = CGPoint(x: 10, y: self.frame.size.height - 25)
         
         self.addChild(scoreLabel)
         
@@ -536,7 +526,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func removeScoreLabel(){
-        self.enumerateChildNodesWithName("scoreLabel", usingBlock: { (node: SKNode!, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
+        self.enumerateChildNodes(withName: "scoreLabel", using: { (node: SKNode!, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
             node.removeFromParent()
         })
     }
@@ -546,31 +536,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         removeTimeLabel()
         
         timeLabel = noteworthyLabelBold.copy() as! SKLabelNode
-        timeLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.Right
+        timeLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.right
         timeLabel.name = "timeLabel"
-        timeLabel.fontColor = SKColor.whiteColor()
+        timeLabel.fontColor = SKColor.white
         timeLabel.fontSize = 18
         timeLabel.text = "Time 00:00"
         timeLabel.zPosition = 100
-        timeLabel.position = CGPointMake(self.frame.size.width - 10, self.frame.size.height - 25)
+        timeLabel.position = CGPoint(x: self.frame.size.width - 10, y: self.frame.size.height - 25)
         
         self.addChild(timeLabel)
         
         remainingTime = parTime
     
-        timer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: "timerTick:", userInfo: nil, repeats: true)
+        timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(GameScene.timerTick(_:)), userInfo: nil, repeats: true)
     }
     
     func removeTimeLabel(){
         timer?.invalidate()
-        self.enumerateChildNodesWithName("timeLabel", usingBlock: { (node: SKNode!, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
+        self.enumerateChildNodes(withName: "timeLabel", using: { (node: SKNode!, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
             node.removeFromParent()
         })
     }
     
     // MARK: - timerTick
-    func timerTick(timer: NSTimer){
-        remainingTime--
+    func timerTick(_ timer: Timer){
+        remainingTime -= 1
         if remainingTime <= 0{
             showLevelCompleted()
             self.timer?.invalidate()
@@ -578,22 +568,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func showLevelFailed(){
-        showLevelBegining(title: "\(levelTitle) failed", subTitle: "")
+        showLevelBegining("\(levelTitle) failed", subTitle: "")
         
         let subTitleNode: SKLabelNode = noteworthyLabelBold.copy() as! SKLabelNode
-        subTitleNode.fontColor = SKColor.blackColor()
+        subTitleNode.fontColor = SKColor.black
         subTitleNode.zPosition = 100
         subTitleNode.name = "restartNode"
         subTitleNode.text = "Restart"
         //subTitleNode.fontSize = 30
-        subTitleNode.position = CGPointMake(CGRectGetMidX(self.frame), 100)
+        subTitleNode.position = CGPoint(x: self.frame.midX, y: 100)
         
         let subtitleShadow: SKLabelNode = noteworthyLabelBold.copy() as! SKLabelNode
-        subtitleShadow.fontColor = SKColor.greenColor()
+        subtitleShadow.fontColor = SKColor.green
         subtitleShadow.name = "subtitleShadow"
         subtitleShadow.text = subTitleNode.text
         //subtitleShadow.fontSize = 30
-        subtitleShadow.position = CGPointMake(subtitleShadow.position.x - 2, subtitleShadow.position.y - 2)
+        subtitleShadow.position = CGPoint(x: subtitleShadow.position.x - 2, y: subtitleShadow.position.y - 2)
         
         subTitleNode.addChild(subtitleShadow)
         
@@ -602,28 +592,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func showLevelCompleted(){
         self.timer?.invalidate()
-        bird.physicsBody!.dynamic = false
+        bird.physicsBody!.isDynamic = false
         hasStarted = false
         
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 500 * Int64(NSEC_PER_MSEC)), dispatch_get_main_queue()){
-            self.showLevelBegining(title: "\(self.levelTitle) completed", subTitle: "Score: \(self.score)", y: 50)
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(500 * Int64(NSEC_PER_MSEC)) / Double(NSEC_PER_SEC)){
+            self.showLevelBegining("\(self.levelTitle) completed", subTitle: "Score: \(self.score)", y: 50)
             
-            let subtitleNode: SKLabelNode = self.childNodeWithName("subtitleNode") as! SKLabelNode
+            let subtitleNode: SKLabelNode = self.childNode(withName: "subtitleNode") as! SKLabelNode
             
             let subTitleNode: SKLabelNode = self.noteworthyLabelBold.copy() as! SKLabelNode
-            subTitleNode.fontColor = SKColor.redColor()
+            subTitleNode.fontColor = SKColor.red
             subTitleNode.zPosition = 100
             subTitleNode.name = "nextLevelNode"
             subTitleNode.text = "Play Next"
             subTitleNode.fontSize = 40
-            subTitleNode.position = CGPointMake(CGRectGetMidX(self.frame), subtitleNode.position.y - 50)
+            subTitleNode.position = CGPoint(x: self.frame.midX, y: subtitleNode.position.y - 50)
             
             let subtitleShadow: SKLabelNode = self.noteworthyLabelBold.copy() as! SKLabelNode
-            subtitleShadow.fontColor = SKColor.greenColor()
+            subtitleShadow.fontColor = SKColor.green
             subtitleShadow.name = "subtitleShadow"
             subtitleShadow.text = subTitleNode.text
             subtitleShadow.fontSize = 40
-            subtitleShadow.position = CGPointMake(subtitleShadow.position.x - 2, subtitleShadow.position.y - 2)
+            subtitleShadow.position = CGPoint(x: subtitleShadow.position.x - 2, y: subtitleShadow.position.y - 2)
             
             subTitleNode.addChild(subtitleShadow)
             
